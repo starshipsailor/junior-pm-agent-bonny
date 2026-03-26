@@ -1,0 +1,45 @@
+# =============================================================================
+# Bonny — .gitignore for open-source release
+# =============================================================================
+# Framework code (scripts, skills, BonnyMonitor app, config templates) is tracked.
+# Vault content (people, business data, meeting notes) is excluded.
+# =============================================================================
+
+# --- Secrets & credentials ---
+config/secrets.env
+config/bonny.json
+
+# --- Runtime state ---
+state/
+logs/
+
+# --- Vault content (sensitive business data) ---
+People/
+Business_Chapter/
+Opportunities/
+Mission_Control/
+Outputs_and_Self_Improvement/
+Session-Logs/
+
+# --- Obsidian ---
+.obsidian/
+
+# --- macOS ---
+.DS_Store
+
+# --- BonnyMonitor build artifacts ---
+BonnyMonitor/build/
+BonnyMonitor/BonnyMonitor.xcodeproj/
+BonnyMonitor/.build/
+*.xcuserstate
+xcuserdata/
+DerivedData/
+
+# --- Archive (old versions, not relevant to public) ---
+Archive/
+
+# --- Duplicate/legacy ---
+Bonny_Skills/
+
+# --- Claude Code internal state ---
+.claude/settings.local.json

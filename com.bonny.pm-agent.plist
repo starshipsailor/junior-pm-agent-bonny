@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.bonny.pm-agent</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/rohan.vadgaonkar/workspace/junior-pm-agent-bonny/scripts/bonny-run.sh</string>
+    </array>
+
+    <key>StartInterval</key>
+    <integer>3600</integer>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/rohan.vadgaonkar/workspace/junior-pm-agent-bonny</string>
+
+    <key>StandardOutPath</key>
+    <string>/Users/rohan.vadgaonkar/workspace/junior-pm-agent-bonny/logs/launchd-stdout.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/rohan.vadgaonkar/workspace/junior-pm-agent-bonny/logs/launchd-stderr.log</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+        <key>HOME</key>
+        <string>/Users/rohan.vadgaonkar</string>
+    </dict>
+
+    <key>LowPriorityIO</key>
+    <true/>
+</dict>
+</plist>

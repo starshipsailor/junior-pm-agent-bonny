@@ -1,0 +1,50 @@
+{
+  "obsidian_vault_path": "/Users/YOUR_USERNAME/workspace/junior-pm-agent-bonny",
+  "notion_meeting_notes_db": "YOUR_NOTION_DATABASE_ID",
+  "model": "sonnet",
+  "max_budget_usd": "5.00",
+  "daily_budget_cap_usd": 50,
+
+  "bonny_inbox_channel": {
+    "name": "#bonny-inbox",
+    "purpose": "Bonny posts draft messages and questions here for review. Includes context links to relevant Slack threads/channels.",
+    "slack_id": "YOUR_CHANNEL_ID"
+  },
+
+  "slack_channels": {
+    "#your-channel": {
+      "team": "TeamName",
+      "squad": "SquadName",
+      "charter": "team_projects_charter",
+      "people": "team_people",
+      "priority": 1,
+      "slack_id": null
+    }
+  },
+
+  "confluence_watch_pages": [
+    {
+      "url": "https://your-instance.atlassian.net/wiki/spaces/SPACE/pages/PAGEID",
+      "label": "Page Title",
+      "project": "project-filename-or-null"
+    }
+  ],
+
+  "monitors": {
+    "slack": {
+      "interval_minutes": 30,
+      "max_budget_usd": "2.00",
+      "model": "sonnet"
+    },
+    "confluence": {
+      "interval_minutes": 120,
+      "max_budget_usd": "2.00",
+      "model": "sonnet"
+    },
+    "meetings": {
+      "interval_minutes": 60,
+      "max_budget_usd": "3.00",
+      "model": "sonnet"
+    }
+  }
+}

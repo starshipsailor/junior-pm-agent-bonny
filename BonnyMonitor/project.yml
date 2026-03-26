@@ -1,0 +1,27 @@
+name: BonnyMonitor
+options:
+  bundleIdPrefix: com.bonny
+  deploymentTarget:
+    macOS: "14.0"
+  xcodeVersion: "16.0"
+
+targets:
+  BonnyMonitor:
+    type: application
+    platform: macOS
+    sources:
+      - BonnyMonitor
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.bonny.monitor
+        MARKETING_VERSION: "1.0.0"
+        CURRENT_PROJECT_VERSION: 1
+        SWIFT_VERSION: "5.9"
+        MACOSX_DEPLOYMENT_TARGET: "14.0"
+        INFOPLIST_FILE: BonnyMonitor/Resources/Info.plist
+        CODE_SIGN_ENTITLEMENTS: BonnyMonitor/Resources/BonnyMonitor.entitlements
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_IDENTITY: "-"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ENABLE_HARDENED_RUNTIME: false
+        GENERATE_INFOPLIST_FILE: false
