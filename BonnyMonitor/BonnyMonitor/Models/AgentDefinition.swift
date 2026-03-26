@@ -123,10 +123,10 @@ enum AgentDefinition: String, CaseIterable, Identifiable {
     /// Interval in seconds from plist (for interval-based agents)
     var scheduleIntervalSeconds: Int? {
         switch self {
-        case .slackMonitor:      return 1800    // 30 min
+        case .slackMonitor:      return 3600    // 1 hour
         case .confluenceMonitor: return 7200    // 2 hours
-        case .meetingMonitor:    return 3600    // 1 hour
-        case .orchestrator:      return 3600    // 1 hour
+        case .meetingMonitor:    return 7200    // 2 hours
+        case .orchestrator:      return 7200    // 2 hours
         default:                 return nil
         }
     }
@@ -134,13 +134,13 @@ enum AgentDefinition: String, CaseIterable, Identifiable {
     /// Calendar schedule description (for calendar-based agents)
     var scheduleDescription: String {
         switch self {
-        case .slackMonitor:      return "Every 30 min"
-        case .confluenceMonitor: return "Every 2 hours"
-        case .meetingMonitor:    return "Every 1 hour"
-        case .orchestrator:      return "Every 1 hour"
+        case .slackMonitor:      return "Hourly :00, Mon-Fri"
+        case .confluenceMonitor: return "2-hourly :00, Mon-Fri"
+        case .meetingMonitor:    return "2-hourly :00, Mon-Fri"
+        case .orchestrator:      return "2-hourly :20, Mon-Fri"
         case .contextDigest:     return "Daily at 6:00 AM"
-        case .selfImprovement:   return "Daily at 7:00 AM"
-        case .cleanup:           return "Sundays at midnight"
+        case .selfImprovement:   return "Mon-Fri at 5:00 PM"
+        case .cleanup:           return "Mon-Fri at 5:30 PM"
         }
     }
 

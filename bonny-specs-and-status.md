@@ -1,7 +1,7 @@
 # Bonny v2 — Specs & Status
 
 *Created: 2026-03-22*
-*Last updated: 2026-03-26 — ALL 7 BUILD PHASES COMPLETE. System deployed and running. BonnyMonitor menubar app built. Open-sourced.*
+*Last updated: 2026-03-26 — ALL 7 BUILD PHASES COMPLETE. System deployed and running. BonnyMonitor menubar app built. Schedules optimized. Open-sourced.*
 
 ## Context
 
@@ -308,18 +308,18 @@ Removed duplicate `last_updated` from: relevance-study, monite-integration, acco
 | **Apple Calendar** (stdio) | Removed | N/A | N/A | `mcp-ical` package never existed on PyPI. Removed from `.mcp.json`. Calendar access now via Notion meeting notes (`notion-query-meeting-notes`). |
 | **Desktop** (stdio) | Working | Yes | N/A | `npx native-devtools-mcp` |
 
-### Launchd Agents — Installed & Registered (2026-03-22)
-All 7 plists installed via `scripts/install.sh` to `~/Library/LaunchAgents/`:
+### Launchd Agents — Installed & Registered (2026-03-22, schedules updated 2026-03-26)
+All 7 plists installed via `scripts/install.sh` to `~/Library/LaunchAgents/`. All agents run **Mon-Fri only, business hours (9am-6pm)**. Uses `StartCalendarInterval` with explicit weekday+hour entries for deterministic scheduling.
 
 | Agent | Plist | Schedule | Headless Status |
 |-------|-------|----------|-----------------|
-| Slack Monitor | `com.bonny.slack-monitor` | Every 30 min | **Working intermittently.** Successful runs Mar 23–26 (all 11 channels scanned). Overnight gaps when plugin auth expires. Skill rewritten with 5-pass priority scan (bonny-inbox → DMs → mentions → threads → channels). |
-| Confluence Monitor | `com.bonny.confluence-monitor` | Every 2 hours | **Working end-to-end.** Scanned 14 pages, found real changes, wrote inbox entries, orchestrator processed them into vault. |
-| Meeting Monitor | `com.bonny.meeting-monitor` | Every 1 hour | **Working.** Skill rewritten to use Notion `"Synced to Bonny?"` checkbox for idempotency (replaces `state/processed.log`). Apple Calendar MCP removed; attendees from Notion. 18 meetings processed Mar 23–26. |
-| Orchestrator | `com.bonny.pm-agent` | Every 1 hour | Working (reads inboxes, processes items, updates vault). |
+| Slack Monitor | `com.bonny.slack-monitor` | Hourly at :00, Mon-Fri 9-17 | **Working intermittently.** Successful runs Mar 23–26 (all 11 channels scanned). Overnight gaps when plugin auth expires. Skill rewritten with 5-pass priority scan (bonny-inbox → DMs → mentions → threads → channels). |
+| Confluence Monitor | `com.bonny.confluence-monitor` | 2-hourly at :00, Mon-Fri 10-18 | **Working end-to-end.** Scanned 14 pages, found real changes, wrote inbox entries, orchestrator processed them into vault. |
+| Meeting Monitor | `com.bonny.meeting-monitor` | 2-hourly at :00, Mon-Fri 10-18 | **Working.** Skill rewritten to use Notion `"Synced to Bonny?"` checkbox for idempotency (replaces `state/processed.log`). Apple Calendar MCP removed; attendees from Notion. 18 meetings processed Mar 23–26. |
+| Orchestrator | `com.bonny.pm-agent` | 2-hourly at :20, Mon-Fri 10-18 | Working. 20-min offset after monitors ensures inbox is populated. Shell-level pre-check skips Claude entirely if inboxes empty. Budget scales by item count ($2/$3/$5). |
 | Context Digest | `com.bonny.context-digest` | Daily 6am | Untested. Should work — only reads local files. |
-| Self-Improvement | `com.bonny.self-improvement` | Daily 7am | Untested. Should work — only reads local files. |
-| Cleanup | `com.bonny.cleanup` | Weekly Sunday | Untested. Should work — only reads/writes local files. |
+| Self-Improvement | `com.bonny.self-improvement` | Mon-Fri at 5:00 PM | Untested. Should work — only reads local files. |
+| Cleanup | `com.bonny.cleanup` | Mon-Fri at 5:30 PM | Untested. Should work — only reads/writes local files. |
 
 ### Key Limitation: OAuth Plugins in `--print` Mode
 OAuth plugin auth in `claude --print` (headless) is **intermittent** — it works after a fresh interactive re-auth but may expire overnight. HTTP remote MCP servers (Atlassian) always work. Current status:

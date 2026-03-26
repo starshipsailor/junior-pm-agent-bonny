@@ -12,15 +12,15 @@
         <string>/Users/rohan.vadgaonkar/workspace/junior-pm-agent-bonny/scripts/cleanup-archives.sh</string>
     </array>
 
+    <!-- Mon-Fri at 5:30 PM -->
     <key>StartCalendarInterval</key>
-    <dict>
-        <key>Weekday</key>
-        <integer>0</integer>
-        <key>Hour</key>
-        <integer>0</integer>
-        <key>Minute</key>
-        <integer>0</integer>
-    </dict>
+    <array>
+        <dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>17</integer><key>Minute</key><integer>30</integer></dict>
+        <dict><key>Weekday</key><integer>2</integer><key>Hour</key><integer>17</integer><key>Minute</key><integer>30</integer></dict>
+        <dict><key>Weekday</key><integer>3</integer><key>Hour</key><integer>17</integer><key>Minute</key><integer>30</integer></dict>
+        <dict><key>Weekday</key><integer>4</integer><key>Hour</key><integer>17</integer><key>Minute</key><integer>30</integer></dict>
+        <dict><key>Weekday</key><integer>5</integer><key>Hour</key><integer>17</integer><key>Minute</key><integer>30</integer></dict>
+    </array>
 
     <key>WorkingDirectory</key>
     <string>/Users/rohan.vadgaonkar/workspace/junior-pm-agent-bonny</string>

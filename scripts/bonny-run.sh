@@ -120,52 +120,74 @@ if [ "${1:-}" = "--dry-run" ]; then
   exit 0
 fi
 
-# --- Build prompt ---
+# --- Pre-check: skip Claude entirely if inboxes are empty ---
+PENDING_COUNT=0
+for f in "$PROJECT_ROOT"/Mission_Control/inbox-*.md; do
+  if [ -f "$f" ]; then
+    COUNT=$(grep -c "Status: pending" "$f" 2>/dev/null || echo "0")
+    PENDING_COUNT=$((PENDING_COUNT + COUNT))
+  fi
+done
+
+if [ "$PENDING_COUNT" -eq 0 ]; then
+  echo "$(date '+%Y-%m-%d %H:%M:%S') - No pending inbox items. Skipping orchestrator run (saved ~\$1-5)."
+  exit 0
+fi
+
+echo "$(date '+%Y-%m-%d %H:%M:%S') - Found $PENDING_COUNT pending inbox items. Starting orchestrator..."
+
+# --- Scale budget to work volume ---
 NOW=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
+if [ "$PENDING_COUNT" -le 3 ]; then
+  MAX_BUDGET="2.00"
+elif [ "$PENDING_COUNT" -le 6 ]; then
+  MAX_BUDGET="3.00"
+fi
+# Above 6 items keeps the configured $5 max
 
 PROMPT="You are the Bonny Orchestrator. Your job is to process pending inbox items and take appropriate actions.
 
 Current date: $(date '+%Y-%m-%d')
 Current time: $(date '+%H:%M')
+Pending items found: $PENDING_COUNT
 
-## Phase 1: Load Context
-1. Read state/context-digest.md for pre-compiled vault context
-   - If it doesn't exist, read: operating_guidelines.md, Business_Chapter/chapter_strategy.md, People/Global_people_index.md
-2. Read operating_guidelines.md for the decision framework and routing rules
-3. Read Outputs_and_Self_Improvement/questions_for_rohan.md for any existing open questions
+## Phase 1: Read Inboxes (do this FIRST — before loading any context)
+1. Read Mission_Control/inbox-slack.md — identify items with Status: pending
+2. Read Mission_Control/inbox-confluence.md — identify items with Status: pending
+3. Read Mission_Control/inbox-meetings.md — identify items with Status: pending
 
-## Phase 2: Read All Inboxes
-4. Read Mission_Control/inbox-slack.md — identify items with Status: pending
-5. Read Mission_Control/inbox-confluence.md — identify items with Status: pending
-6. Read Mission_Control/inbox-meetings.md — identify items with Status: pending
-7. If there are no pending items across all inboxes, log that and exit early.
+## Phase 2: Load Context (only what's needed for the pending items)
+4. Read operating_guidelines.md for routing rules
+5. Read state/context-digest.md for vault context (if it exists)
+   - Only if no digest: read Business_Chapter/chapter_strategy.md
+6. For each pending item, read ONLY the specific project/team file it references — do NOT read the full vault
 
 ## Phase 3: Process Each Item
 Sort all pending items by priority:
   BLOCKER > ACTION_ITEM (Rohan named) > ACTION_ITEM (others) > DECISION > STATUS_CHANGE > PERSONNEL > RISK
 
 For each pending item, in priority order:
-  a. Read the related project/team files from the vault for full context
-  b. Check if the information is already captured in the vault (deduplication)
-  c. Apply the routing rules from operating_guidelines.md to determine the action
-  d. Execute the action by reading the relevant skill file first:
-     - Update vault: Read .claude/commands/skills/update-vault.md, then edit the file
-     - Draft Slack: Read .claude/commands/skills/draft-slack.md, then write draft to state/slack-drafts/
-     - Write Confluence: Read .claude/commands/skills/write-confluence.md, then draft content
-     - Update tasks: Read .claude/commands/skills/update-tasks.md, then append
+  a. Check if the information is already captured in the vault (deduplication)
+  b. Apply the routing rules from operating_guidelines.md to determine the action
+  c. Execute the action:
+     - Update vault: Edit the relevant file directly (you know the vault conventions from CLAUDE.md)
+     - Draft Slack: Post draft to #bonny-inbox via Slack MCP. Save local backup to state/slack-drafts/
+     - Update tasks: Append to the relevant task list
      - Do nothing: Log reasoning to Outputs_and_Self_Improvement/questions_for_rohan.md
-  e. Mark the item's Status as processed (or duplicate) in the inbox file
-  f. Log the action to Outputs_and_Self_Improvement/action_log.md with a unique task ID
+  d. Mark the item's Status as processed (or duplicate) in the inbox file
+  e. Log the action to Outputs_and_Self_Improvement/action_log.md with a unique task ID
 
 ## Phase 4: Health Check
-8. Check state/slack-monitor-last-run.json — flag if last_success is more than 60 minutes ago or status is error
-9. Check state/confluence-monitor-last-run.json — flag if last_success is more than 4 hours ago or status is error
-10. Check state/meeting-monitor-last-run.json — flag if last_success is more than 2 hours ago or status is error
-11. If any monitor is unhealthy, note it in the summary and log to questions_for_rohan.md
+7. Check state/slack-monitor-last-run.json — flag if last_success > 60 min ago or status is error
+8. Check state/confluence-monitor-last-run.json — flag if last_success > 4 hours ago or status is error
+9. Check state/meeting-monitor-last-run.json — flag if last_success > 2 hours ago or status is error
+10. If any monitor is unhealthy, note it in the summary
 
 ## Phase 5: Summary
-12. Print a summary: total items processed, actions taken (vault updates, drafts written, questions logged), items skipped as duplicates
-13. Log the run to Mission_Control/agent_activity_log.md"
+11. Print a summary: items processed, actions taken, duplicates skipped
+12. Log the run to Mission_Control/agent_activity_log.md
+
+IMPORTANT: Be efficient. Do not read files you don't need. Do not read skill files — the instructions above are sufficient. Minimize file reads to reduce cost."
 
 # --- Run Claude Code ---
 LOG_FILE="$LOG_DIR/$(date '+%Y-%m-%d_%H%M%S').log"
